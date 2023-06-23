@@ -1,4 +1,7 @@
 from collections import Counter
+from itertools import permutations
+from math import factorial
+from multiprocessing import Pool
 from copy import deepcopy
 
 from color.beaker import Beaker, Content
@@ -69,6 +72,8 @@ def solve(shelf: list[Beaker]) -> list[str]:
                     except ValueError:
                         pass
                     else:
+                        # print(f'{beaker1 = }')
+                        # print(f'{beaker2 = }', '\n')
                         moves.append(f'{i} -> {j}')
                         pouring_deadlock = False
 
@@ -117,14 +122,74 @@ def main():
         print_info()
         exit(1)
 
-    shortest_moves = []
-    for i in range(11):
-        moves = solve(deepcopy(shelf[i:] + shelf[:i]))
-        if moves:
-            if len(shortest_moves) == 0 or len(moves) < len(shortest_moves):
-                shortest_moves = moves
+    # shortest_moves = []
+    # for i in range(11):
+    #     # print(i, '\n')
+    #     moves = solve(deepcopy(shelf[i:] + shelf[:i]))
+    #     if moves:
+    #         if len(shortest_moves) == 0 or len(moves) < len(shortest_moves):
+    #             shortest_moves = moves
 
-    print('Solution:')
+    # for i, move in enumerate(shortest_moves, start=1):
+    #     print(f'{i}:\t{move}')
+
+    ########################
+    ########################
+    ########################
+    ########################
+
+    # shortest_moves = []
+    # shelf_permutations, length = permutations(shelf), factorial(len(shelf))
+    # for i in range(length):
+    #     # print(i, '\n')
+    #     moves = solve(deepcopy(next(shelf_permutations)))
+    #     if moves:
+    #         if len(shortest_moves) == 0 or len(moves) < len(shortest_moves):
+    #             shortest_moves = moves
+
+    # for i, move in enumerate(shortest_moves, start=1):
+    #     print(f'{i}:\t{move}')
+
+    # #########################
+    # #########################
+    # #########################
+    # #########################
+    # #########################
+
+    # shortest_moves = []
+    # shelf_permutations, length = permutations(shelf), factorial(len(shelf))
+    # for _ in range(0, length, 20):
+    #     batch = []
+    #     for _ in range(20):
+    #         batch.append(next(shelf_permutations))
+
+    #     with Pool() as pool:
+    #         moves_list = pool.imap_unordered(solve, batch)
+
+    #         for moves in moves_list:
+    #             if moves:
+    #                 if len(shortest_moves) == 0 or len(moves) < len(shortest_moves):
+    #                     shortest_moves = moves
+
+    # for i, move in enumerate(shortest_moves, start=1):
+    #     print(f'{i}:\t{move}')
+
+    #########################
+    #########################
+    #########################
+    #########################
+    #########################
+
+    shortest_moves = []
+    shelf_permutations = permutations(shelf)
+    with Pool() as pool:
+        moves_list = pool.imap_unordered(solve, shelf_permutations, chunksize=10)
+
+        for moves in moves_list:
+            if moves:
+                if len(shortest_moves) == 0 or len(moves) < len(shortest_moves):
+                    shortest_moves = moves
+
     for i, move in enumerate(shortest_moves, start=1):
         print(f'{i}:\t{move}')
 
